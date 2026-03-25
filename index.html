@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>あなたに合う車診断 | Car Diagnosis</title>
+  <meta name="description" content="YES/NOに答えるだけで、あなたにぴったりの車が見つかる診断アプリ">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #08080f;
+      --bg-secondary: #0f0f1a;
+      --bg-card: rgba(255, 255, 255, 0.04);
+      --bg-card-hover: rgba(255, 255, 255, 0.08);
+      --text-primary: #f0ece4;
+      --text-secondary: rgba(240, 236, 228, 0.6);
+      --text-muted: rgba(240, 236, 228, 0.35);
+      --accent: #c9a84c;
+      --accent-light: #e4c76b;
+      --accent-glow: rgba(201, 168, 76, 0.25);
+      --yes-color: #c9a84c;
+      --yes-hover: #e4c76b;
+      --no-color: #6b7280;
+      --no-hover: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+      --radius: 16px;
+      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    body {
+      font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Background Effects ===== */
+    .bg-effects {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+      animation: orbFloat 20s ease-in-out infinite;
+    }
+
+    .bg-orb:nth-child(1) {
+      width: 500px; height: 500px;
+      background: var(--accent);
+      top: -15%; left: -10%;
+      animation-delay: 0s;
+    }
+
+    .bg-orb:nth-child(2) {
+      width: 400px; height: 400px;
+      background: #4a3520;
+      bottom: -10%; right: -10%;
+      animation-delay: -7s;
+    }
+
+    .bg-orb:nth-child(3) {
+      width: 300px; height: 300px;
+      background: #2a2a4a;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ===== Container ===== */
+    #app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Screens ===== */
+    .screen {
+      width: 100%;
+      display: none;
+      animation: fadeSlideIn 0.6s var(--transition) forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Start Screen ===== */
+    .start-screen {
+      text-align: center;
+    }
+
+    .logo-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8a6f2f);
+      margin-bottom: 32px;
+      box-shadow: 0 0 60px var(--accent-glow);
+    }
+
+    .logo-icon svg {
+      width: 40px; height: 40px;
+      fill: var(--bg-primary);
+    }
+
+    .start-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .start-heading {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .start-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .btn-start {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 48px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--bg-primary);
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 30px var(--accent-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-start::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 40px rgba(201, 168, 76, 0.4);
+    }
+
+    .btn-start:hover::before { opacity: 1; }
+
+    .btn-start:active { transform: translateY(0) scale(0.98); }
+
+    .btn-start svg {
+      width: 18px; height: 18px;
+      fill: var(--bg-primary);
+      transition: var(--transition);
+    }
+
+    .btn-start:hover svg { transform: translateX(3px); }
+
+    /* ===== Question Screen ===== */
+    .question-screen { text-align: center; }
+
+    .progress-area {
+      margin-bottom: 40px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .progress-count {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      border-radius: 10px;
+      transition: width 0.6s ease;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .question-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .question-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+    }
+
+    .question-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--accent);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .question-text {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn-answer {
+      flex: 1;
+      padding: 18px 24px;
+      font-size: 18px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 2px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-yes {
+      color: var(--bg-primary);
+      background: linear-gradient(135deg, var(--yes-color), var(--yes-hover));
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.2);
+    }
+
+    .btn-yes:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(201, 168, 76, 0.35);
+    }
+
+    .btn-no {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+    }
+
+    .btn-no:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .btn-answer:active { transform: translateY(0) scale(0.97); }
+
+    /* ===== Result Screen ===== */
+    .result-screen { text-align: center; }
+
+    .result-badge {
+      display: inline-block;
+      padding: 6px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      border-radius: 60px;
+      margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .result-label {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .result-car-name {
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .result-car-brand {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .result-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+    }
+
+    .result-image-area {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+      border: 1px solid rgba(201,168,76,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .car-silhouette {
+      font-size: 72px;
+      opacity: 0.9;
+    }
+
+    .result-features {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .feature-tag {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .result-description {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .btn-restart {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 40px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text-primary);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 60px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-restart:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .btn-restart svg {
+      width: 16px; height: 16px;
+      fill: currentColor;
+    }
+
+    /* ===== Particles ===== */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    /* ===== Transition Overlay ===== */
+    .transition-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg-primary);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .transition-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 480px) {
+      #app { padding: 16px; }
+      .start-heading { font-size: 26px; }
+      .question-card { padding: 36px 24px; }
+      .question-text { font-size: 20px; }
+      .result-car-name { font-size: 28px; }
+      .btn-group { gap: 12px; }
+      .btn-answer { padding: 16px 20px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-effects">
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div class="particles" id="particles"></div>
+
+  <div class="transition-overlay" id="transitionOverlay"></div>
+
+  <div id="app">
+    <!-- ===== Start Screen ===== -->
+    <div class="screen active" id="startScreen">
+      <div class="start-screen">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+        </div>
+        <p class="start-title">Car Diagnosis</p>
+        <h1 class="start-heading">あなたに合う車、<br>見つけませんか？</h1>
+        <p class="start-desc">
+          いくつかの質問に<strong>YES</strong>か<strong>NO</strong>で答えるだけ。<br>
+          あなたのライフスタイルにぴったりの<br>
+          一台が見つかります。
+        </p>
+        <button class="btn-start" id="btnStart" onclick="startDiagnosis()">
+          診断をはじめる
+          <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== Question Screen ===== -->
+    <div class="screen" id="questionScreen">
+      <div class="question-screen">
+        <div class="progress-area">
+          <div class="progress-info">
+            <span class="progress-label">Progress</span>
+            <span class="progress-count" id="progressCount">1 / 5</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="question-card" id="questionCard">
+          <p class="question-number" id="questionNumber">QUESTION 01</p>
+          <h2 class="question-text" id="questionText">質問テキスト</h2>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-answer btn-yes" id="btnYes" onclick="answer(true)">YES</button>
+          <button class="btn-answer btn-no" id="btnNo" onclick="answer(false)">NO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Result Screen ===== -->
+    <div class="screen" id="resultScreen">
+      <div class="result-screen">
+        <div class="result-badge">Diagnosis Result</div>
+        <p class="result-label">あなたにおすすめの車は…</p>
+        <h2 class="result-car-name" id="resultCarName">—</h2>
+        <p class="result-car-brand" id="resultCarBrand">—</p>
+
+        <div class="result-card">
+          <div class="result-image-area">
+            <span class="car-silhouette" id="resultEmoji">🚗</span>
+          </div>
+          <div class="result-features" id="resultFeatures"></div>
+          <p class="result-description" id="resultDescription"></p>
+        </div>
+
+        <button class="btn-restart" onclick="restart()">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          もう一度診断する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Decision Tree Data =====
+    // Each node is either a question { q, yes, no } or a result { result }
+    const tree = {
+      q: "3人以上で乗ることが多い？",
+      yes: {
+        q: "5人以上で乗ることもある？",
+        yes: {
+          q: "荷物はいっぱい積む？",
+          yes: {
+            q: "山や雪道を走ることがある？",
+            yes: { result: "delica" },
+            no: { result: "alphard" }
+          },
+          no: {
+            q: "派手やかさがほしい？",
+            yes: { result: "gclass" },
+            no: { result: "bclass" }
+          }
+        },
+        no: {
+          q: "荷物はいっぱい積む？",
+          yes: {
+            q: "アウトドアに行くことが多い？",
+            yes: { result: "landcruiser" },
+            no: {
+              q: "外車に乗ってみたい？",
+              yes: { result: "bmw3" },
+              no: { result: "levorg" }
+            }
+          },
+          no: {
+            q: "見た目よりも小回りが大事？",
+            yes: { result: "bmw1" },
+            no: {
+              q: "走り心地が大事？",
+              yes: { result: "a7" },
+              no: { result: "wrangler" }
+            }
+          }
+        }
+      },
+      no: {
+        q: "ひとりでドライブするのが好き？",
+        yes: { result: "z4" },
+        no: {
+          q: "デートを満喫したい？",
+          yes: { result: "mini" },
+          no: {
+            q: "スポーツカーに挑戦してみたい？",
+            yes: {
+              q: "一度はオープンカーに乗りたい？",
+              yes: { result: "sl" },
+              no: { result: "86" }
+            },
+            no: {
+              q: "やっぱり国産車がいい？",
+              yes: { result: "jimny" },
+              no: { result: "golf" }
+            }
+          }
+        }
+      }
+    };
+
+    // ===== Car Result Data =====
+    const cars = {
+      delica: {
+        name: "デリカD:5",
+        brand: "MITSUBISHI",
+        emoji: "🏔️",
+        features: ["4WD", "悪路走破", "大人数", "アウトドア"],
+        description: "唯一無二のオールラウンダーSUVミニバン。山道も雪道も家族旅行も、すべてをこの一台でこなせる頼もしい相棒です。"
+      },
+      alphard: {
+        name: "アルファード",
+        brand: "TOYOTA",
+        emoji: "👑",
+        features: ["高級ミニバン", "快適空間", "大人数", "ラグジュアリー"],
+        description: "キング・オブ・ミニバン。広大な室内空間と上質な乗り心地で、大人数の移動をファーストクラスの体験に変えます。"
+      },
+      gclass: {
+        name: "Gクラス",
+        brand: "MERCEDES-BENZ",
+        emoji: "💎",
+        features: ["高級SUV", "ステータス", "オフロード", "アイコニック"],
+        description: "40年以上の歴史を持つ本格SUVの頂点。街でも山でも圧倒的な存在感を放つ、唯一無二のアイコンです。"
+      },
+      bclass: {
+        name: "Bクラス",
+        brand: "MERCEDES-BENZ",
+        emoji: "✨",
+        features: ["コンパクト", "実用的", "上質", "ファミリー"],
+        description: "メルセデスの上質さをコンパクトに凝縮。広い室内と先進安全装備で、日常から週末のお出かけまで快適にこなします。"
+      },
+      landcruiser: {
+        name: "ランドクルーザープラド",
+        brand: "TOYOTA",
+        emoji: "🌲",
+        features: ["本格SUV", "アウトドア", "耐久性", "リセールバリュー"],
+        description: "世界中で信頼される本格SUV。アウトドアでの走破性はもちろん、街乗りの快適性も高い次元で両立しています。"
+      },
+      bmw3: {
+        name: "3シリーズ ツーリング",
+        brand: "BMW",
+        emoji: "🚀",
+        features: ["スポーツワゴン", "走りの楽しさ", "荷室広々", "欧州車"],
+        description: "駆けぬける歓びと実用性の完璧な融合。スポーティな走りと広い荷室を両立した、大人のためのワゴンです。"
+      },
+      levorg: {
+        name: "レヴォーグ",
+        brand: "SUBARU",
+        emoji: "🔧",
+        features: ["スポーツワゴン", "AWD", "アイサイト", "走行性能"],
+        description: "スバルの技術力が詰まったスポーツワゴン。先進のアイサイトと対称AWDで、安心と走りの楽しさを提供します。"
+      },
+      bmw1: {
+        name: "1シリーズ",
+        brand: "BMW",
+        emoji: "🏙️",
+        features: ["コンパクト", "スポーティ", "取り回し◎", "プレミアム"],
+        description: "BMWの走りの楽しさをコンパクトに凝縮。小回りが利きながらもプレミアムな走行体験を提供する、都会派のための一台です。"
+      },
+      a7: {
+        name: "A7 スポーツバック",
+        brand: "AUDI",
+        emoji: "🎭",
+        features: ["4ドアクーペ", "エレガント", "走行性能", "プレミアム"],
+        description: "美しい4ドアクーペのシルエットに、圧倒的な走行性能を秘めた一台。優雅さとスポーティさを高次元で融合しています。"
+      },
+      wrangler: {
+        name: "ラングラー",
+        brand: "JEEP",
+        emoji: "🏜️",
+        features: ["本格オフロード", "オープンエア", "タフ", "アメリカン"],
+        description: "オフロードの王者。取り外せるドアやルーフで自然との一体感を楽しめる、冒険心をくすぐる唯一無二の存在です。"
+      },
+      z4: {
+        name: "Z4",
+        brand: "BMW",
+        emoji: "💨",
+        features: ["ロードスター", "オープン", "スポーティ", "ソロドライブ"],
+        description: "風を感じて走る歓び。美しいロングノーズと電動ソフトトップの2シーターで、至福のソロドライブを約束します。"
+      },
+      mini: {
+        name: "MINI",
+        brand: "MINI",
+        emoji: "🇬🇧",
+        features: ["おしゃれ", "コンパクト", "デート向き", "個性的"],
+        description: "アイコニックなデザインと遊び心が魅力。街中でもドライブでも、どこにいてもおしゃれで楽しい気分にしてくれます。"
+      },
+      sl: {
+        name: "SLクラス",
+        brand: "MERCEDES-BENZ",
+        emoji: "🌅",
+        features: ["ラグジュアリーオープン", "高級ロードスター", "V8", "究極のオープン"],
+        description: "メルセデスが誇る究極のオープンカー。圧倒的なパワーとラグジュアリーな車内で、最高のオープンエア体験を。"
+      },
+      "86": {
+        name: "86 / GR86",
+        brand: "TOYOTA",
+        emoji: "🏁",
+        features: ["スポーツカー", "FR", "軽量", "走りの楽しさ"],
+        description: "純粋な走りの楽しさを追求したFRスポーツ。軽量コンパクトなボディで、ワインディングロードが最高の遊び場になります。"
+      },
+      jimny: {
+        name: "ジムニー",
+        brand: "SUZUKI",
+        emoji: "⛰️",
+        features: ["軽SUV", "本格4WD", "レトロデザイン", "タフ"],
+        description: "小さなボディに本格オフロード性能を詰め込んだ唯一無二の軽SUV。そのレトロでタフなデザインは世界中で愛されています。"
+      },
+      golf: {
+        name: "ゴルフ",
+        brand: "VOLKSWAGEN",
+        emoji: "🌍",
+        features: ["ベンチマーク", "万能", "質実剛健", "欧州ハッチ"],
+        description: "コンパクトカーの世界基準。あらゆる面で高水準にまとまった、誰もが満足できる質実剛健なハッチバックです。"
+      }
+    };
+
+    // ===== App State =====
+    let currentNode = null;
+    let questionCount = 0;
+    let maxDepth = 0;
+
+    // Calculate max depth of tree
+    function getMaxDepth(node) {
+      if (node.result) return 0;
+      return 1 + Math.max(getMaxDepth(node.yes), getMaxDepth(node.no));
+    }
+
+    // ===== Screen Management =====
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      target.classList.remove('active');
+      // Trigger reflow for animation
+      void target.offsetWidth;
+      target.classList.add('active');
+    }
+
+    // ===== Start Diagnosis =====
+    function startDiagnosis() {
+      currentNode = tree;
+      questionCount = 0;
+      maxDepth = getMaxDepth(tree);
+      showScreen('questionScreen');
+      renderQuestion();
+    }
+
+    // ===== Render Question =====
+    function renderQuestion() {
+      questionCount++;
+      const qNum = String(questionCount).padStart(2, '0');
+      document.getElementById('questionNumber').textContent = `QUESTION ${qNum}`;
+      document.getElementById('questionText').textContent = currentNode.q;
+
+      // Progress
+      const progress = Math.min((questionCount / maxDepth) * 100, 100);
+      document.getElementById('progressFill').style.width = progress + '%';
+      document.getElementById('progressCount').textContent = `${questionCount} / ${maxDepth}`;
+
+      // Card entrance animation
+      const card = document.getElementById('questionCard');
+      card.style.animation = 'none';
+      void card.offsetWidth;
+      card.style.animation = 'fadeSlideIn 0.5s ease forwards';
+    }
+
+    // ===== Answer =====
+    function answer(isYes) {
+      const nextNode = isYes ? currentNode.yes : currentNode.no;
+
+      if (nextNode.result) {
+        // Show result
+        showResult(nextNode.result);
+      } else {
+        // Next question
+        currentNode = nextNode;
+        renderQuestion();
+      }
+    }
+
+    // ===== Show Result =====
+    function showResult(carKey) {
+      const car = cars[carKey];
+      if (!car) return;
+
+      document.getElementById('resultCarName').textContent = car.name;
+      document.getElementById('resultCarBrand').textContent = car.brand;
+      document.getElementById('resultEmoji').textContent = car.emoji;
+
+      // Features
+      const featuresEl = document.getElementById('resultFeatures');
+      featuresEl.innerHTML = car.features.map(f => `<span class="feature-tag">${f}</span>`).join('');
+
+      // Description
+      document.getElementById('resultDescription').textContent = car.description;
+
+      showScreen('resultScreen');
+      createParticles();
+    }
+
+    // ===== Restart =====
+    function restart() {
+      clearParticles();
+      showScreen('startScreen');
+    }
+
+    // ===== Particle Effects =====
+    function createParticles() {
+      const container = document.getElementById('particles');
+      clearParticles();
+
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.width = particle.style.height = (Math.random() * 4 + 2) + 'px';
+        particle.style.animationDelay = Math.random() * 2 + 's';
+
+        const duration = 3 + Math.random() * 4;
+        particle.style.animation = `particleFloat ${duration}s ease-in-out infinite`;
+
+        container.appendChild(particle);
+      }
+
+      // Inject particle animation if not exists
+      if (!document.getElementById('particleStyle')) {
+        const style = document.createElement('style');
+        style.id = 'particleStyle';
+        style.textContent = `
+          @keyframes particleFloat {
+            0%, 100% { opacity: 0; transform: translateY(0) scale(0); }
+            10% { opacity: 0.6; }
+            50% { opacity: 0.3; transform: translateY(-40px) scale(1); }
+            90% { opacity: 0; }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+
+    function clearParticles() {
+      document.getElementById('particles').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
