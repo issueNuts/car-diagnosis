@@ -1071,36 +1071,56 @@
     function clearParticles() {
       document.getElementById('particles').innerHTML = '';
     }
-    // ===== Counter =====
-    const STORAGE_KEY = 'car_diagnosis_count';
+    // ===== Shared Counter (counterapi.dev) =====
+    const COUNTER_BASE = 'https://api.counterapi.dev/v1/kazuma-car-diagnosis/v1';
+    const FALLBACK_KEY = 'car_diagnosis_count_local';
 
-    function getCount() {
-      return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+    function animateCount(el, target) {
+      let current = parseInt(el.textContent.replace(/,/g, ''), 10) || 0;
+      if (current === target) { el.textContent = target.toLocaleString(); return; }
+      const duration = 800;
+      const start = performance.now();
+      const startVal = current;
+      function step(now) {
+        const elapsed = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - elapsed, 3);
+        const val = Math.round(startVal + (target - startVal) * eased);
+        el.textContent = val.toLocaleString();
+        if (elapsed < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
     }
 
-    function incrementCount() {
-      const newCount = getCount() + 1;
-      localStorage.setItem(STORAGE_KEY, newCount);
-      return newCount;
-    }
-
-    function updateCountDisplay() {
+    async function fetchCount() {
       const el = document.getElementById('totalCount');
       if (!el) return;
-      const target = getCount();
-      // Animate count up
-      let current = parseInt(el.textContent, 10) || 0;
-      if (current === target) { el.textContent = target; return; }
-      const step = Math.ceil(Math.abs(target - current) / 20);
-      const interval = setInterval(() => {
-        current = Math.min(current + step, target);
-        el.textContent = current;
-        if (current >= target) clearInterval(interval);
-      }, 30);
+      try {
+        const res = await fetch(COUNTER_BASE, { signal: AbortSignal.timeout(5000) });
+        const data = await res.json();
+        animateCount(el, data.count || 0);
+      } catch {
+        // fallback: localStorage
+        animateCount(el, parseInt(localStorage.getItem(FALLBACK_KEY) || '0', 10));
+      }
     }
 
+    async function incrementCount() {
+      try {
+        const res = await fetch(COUNTER_BASE + '/up', { signal: AbortSignal.timeout(5000) });
+        const data = await res.json();
+        const el = document.getElementById('totalCount');
+        if (el) animateCount(el, data.count || 0);
+      } catch {
+        // fallback: localStorage
+        const n = parseInt(localStorage.getItem(FALLBACK_KEY) || '0', 10) + 1;
+        localStorage.setItem(FALLBACK_KEY, n);
+      }
+    }
+
+    function updateCountDisplay() { fetchCount(); }
+
     // Init counter on load
-    window.addEventListener('DOMContentLoaded', updateCountDisplay);
+    window.addEventListener('DOMContentLoaded', fetchCount);
   </script>
 </body>
 
