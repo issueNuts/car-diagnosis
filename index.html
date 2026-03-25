@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,18 @@
   <meta name="description" content="YES/NOに答えるだけで、あなたにぴったりの車が見つかる診断アプリ">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;600;700;900&family=Outfit:wght@300;400;600;700;800&display=swap"
+    rel="stylesheet">
   <style>
     /* ===== Reset & Base ===== */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg-primary: #08080f;
@@ -61,39 +70,55 @@
     }
 
     .bg-orb:nth-child(1) {
-      width: 500px; height: 500px;
+      width: 500px;
+      height: 500px;
       background: var(--accent);
-      top: -15%; left: -10%;
+      top: -15%;
+      left: -10%;
       animation-delay: 0s;
     }
 
     .bg-orb:nth-child(2) {
-      width: 400px; height: 400px;
+      width: 400px;
+      height: 400px;
       background: #4a3520;
-      bottom: -10%; right: -10%;
+      bottom: -10%;
+      right: -10%;
       animation-delay: -7s;
     }
 
     .bg-orb:nth-child(3) {
-      width: 300px; height: 300px;
+      width: 300px;
+      height: 300px;
       background: #2a2a4a;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       animation-delay: -14s;
     }
 
     @keyframes orbFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(30px, -30px) scale(1.05); }
-      66% { transform: translate(-20px, 20px) scale(0.95); }
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -30px) scale(1.05);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.95);
+      }
     }
 
     .bg-grid {
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 60px 60px;
     }
 
@@ -122,8 +147,15 @@
     }
 
     @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ===== Start Screen ===== */
@@ -135,7 +167,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 80px; height: 80px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), #8a6f2f);
       margin-bottom: 32px;
@@ -143,7 +176,8 @@
     }
 
     .logo-icon svg {
-      width: 40px; height: 40px;
+      width: 40px;
+      height: 40px;
       fill: var(--bg-primary);
     }
 
@@ -198,7 +232,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+      background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2));
       opacity: 0;
       transition: var(--transition);
     }
@@ -208,20 +242,29 @@
       box-shadow: 0 8px 40px rgba(201, 168, 76, 0.4);
     }
 
-    .btn-start:hover::before { opacity: 1; }
+    .btn-start:hover::before {
+      opacity: 1;
+    }
 
-    .btn-start:active { transform: translateY(0) scale(0.98); }
+    .btn-start:active {
+      transform: translateY(0) scale(0.98);
+    }
 
     .btn-start svg {
-      width: 18px; height: 18px;
+      width: 18px;
+      height: 18px;
       fill: var(--bg-primary);
       transition: var(--transition);
     }
 
-    .btn-start:hover svg { transform: translateX(3px); }
+    .btn-start:hover svg {
+      transform: translateX(3px);
+    }
 
     /* ===== Question Screen ===== */
-    .question-screen { text-align: center; }
+    .question-screen {
+      text-align: center;
+    }
 
     .progress-area {
       margin-bottom: 40px;
@@ -281,7 +324,9 @@
     .question-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       opacity: 0.5;
@@ -337,20 +382,24 @@
 
     .btn-no {
       color: var(--text-primary);
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border);
     }
 
     .btn-no:hover {
       transform: translateY(-3px);
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .btn-answer:active { transform: translateY(0) scale(0.97); }
+    .btn-answer:active {
+      transform: translateY(0) scale(0.97);
+    }
 
     /* ===== Result Screen ===== */
-    .result-screen { text-align: center; }
+    .result-screen {
+      text-align: center;
+    }
 
     .result-badge {
       display: inline-block;
@@ -408,7 +457,9 @@
     .result-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       opacity: 0.5;
@@ -416,21 +467,33 @@
 
     .result-image-area {
       width: 100%;
-      height: 200px;
+      height: 220px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
-      border: 1px solid rgba(201,168,76,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: #0d0d18;
+      border: 1px solid rgba(201, 168, 76, 0.1);
       margin-bottom: 24px;
       position: relative;
       overflow: hidden;
     }
 
-    .car-silhouette {
-      font-size: 72px;
-      opacity: 0.9;
+    .result-image-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .result-image-area img:hover {
+      transform: scale(1.03);
+    }
+
+    .result-image-area .img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(8, 8, 15, 0.5) 0%, transparent 50%);
+      pointer-events: none;
     }
 
     .result-features {
@@ -445,7 +508,7 @@
       font-size: 13px;
       font-weight: 500;
       color: var(--text-secondary);
-      background: rgba(255,255,255,0.04);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
       border-radius: 8px;
     }
@@ -475,14 +538,15 @@
     }
 
     .btn-restart:hover {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       border-color: var(--accent);
       color: var(--accent);
       transform: translateY(-2px);
     }
 
     .btn-restart svg {
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       fill: currentColor;
     }
 
@@ -496,7 +560,8 @@
 
     .particle {
       position: absolute;
-      width: 4px; height: 4px;
+      width: 4px;
+      height: 4px;
       background: var(--accent);
       border-radius: 50%;
       opacity: 0;
@@ -520,16 +585,38 @@
 
     /* ===== Responsive ===== */
     @media (max-width: 480px) {
-      #app { padding: 16px; }
-      .start-heading { font-size: 26px; }
-      .question-card { padding: 36px 24px; }
-      .question-text { font-size: 20px; }
-      .result-car-name { font-size: 28px; }
-      .btn-group { gap: 12px; }
-      .btn-answer { padding: 16px 20px; font-size: 16px; }
+      #app {
+        padding: 16px;
+      }
+
+      .start-heading {
+        font-size: 26px;
+      }
+
+      .question-card {
+        padding: 36px 24px;
+      }
+
+      .question-text {
+        font-size: 20px;
+      }
+
+      .result-car-name {
+        font-size: 28px;
+      }
+
+      .btn-group {
+        gap: 12px;
+      }
+
+      .btn-answer {
+        padding: 16px 20px;
+        font-size: 16px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="bg-effects">
     <div class="bg-orb"></div>
@@ -547,7 +634,10 @@
     <div class="screen active" id="startScreen">
       <div class="start-screen">
         <div class="logo-icon">
-          <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
+          </svg>
         </div>
         <p class="start-title">Car Diagnosis</p>
         <h1 class="start-heading">あなたに合う車、<br>見つけませんか？</h1>
@@ -558,7 +648,9 @@
         </p>
         <button class="btn-start" id="btnStart" onclick="startDiagnosis()">
           診断をはじめる
-          <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+          </svg>
         </button>
       </div>
     </div>
@@ -598,14 +690,18 @@
 
         <div class="result-card">
           <div class="result-image-area">
-            <span class="car-silhouette" id="resultEmoji">🚗</span>
+            <img id="resultCarImage" src="" alt="car photo" onerror="this.style.display='none'">
+            <div class="img-overlay"></div>
           </div>
           <div class="result-features" id="resultFeatures"></div>
           <p class="result-description" id="resultDescription"></p>
         </div>
 
         <button class="btn-restart" onclick="restart()">
-          <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+          </svg>
           もう一度診断する
         </button>
       </div>
@@ -682,112 +778,112 @@
       delica: {
         name: "デリカD:5",
         brand: "MITSUBISHI",
-        emoji: "🏔️",
+        image: "images/delica.jpg",
         features: ["4WD", "悪路走破", "大人数", "アウトドア"],
         description: "唯一無二のオールラウンダーSUVミニバン。山道も雪道も家族旅行も、すべてをこの一台でこなせる頼もしい相棒です。"
       },
       alphard: {
         name: "アルファード",
         brand: "TOYOTA",
-        emoji: "👑",
+        image: "images/alphard.jpg",
         features: ["高級ミニバン", "快適空間", "大人数", "ラグジュアリー"],
         description: "キング・オブ・ミニバン。広大な室内空間と上質な乗り心地で、大人数の移動をファーストクラスの体験に変えます。"
       },
       gclass: {
         name: "Gクラス",
         brand: "MERCEDES-BENZ",
-        emoji: "💎",
+        image: "images/gclass.jpg",
         features: ["高級SUV", "ステータス", "オフロード", "アイコニック"],
         description: "40年以上の歴史を持つ本格SUVの頂点。街でも山でも圧倒的な存在感を放つ、唯一無二のアイコンです。"
       },
       bclass: {
         name: "Bクラス",
         brand: "MERCEDES-BENZ",
-        emoji: "✨",
+        image: "images/bclass.jpg",
         features: ["コンパクト", "実用的", "上質", "ファミリー"],
         description: "メルセデスの上質さをコンパクトに凝縮。広い室内と先進安全装備で、日常から週末のお出かけまで快適にこなします。"
       },
       landcruiser: {
         name: "ランドクルーザープラド",
         brand: "TOYOTA",
-        emoji: "🌲",
+        image: "images/landcruiser.jpg",
         features: ["本格SUV", "アウトドア", "耐久性", "リセールバリュー"],
         description: "世界中で信頼される本格SUV。アウトドアでの走破性はもちろん、街乗りの快適性も高い次元で両立しています。"
       },
       bmw3: {
         name: "3シリーズ ツーリング",
         brand: "BMW",
-        emoji: "🚀",
+        image: "images/bmw3.jpg",
         features: ["スポーツワゴン", "走りの楽しさ", "荷室広々", "欧州車"],
         description: "駆けぬける歓びと実用性の完璧な融合。スポーティな走りと広い荷室を両立した、大人のためのワゴンです。"
       },
       levorg: {
         name: "レヴォーグ",
         brand: "SUBARU",
-        emoji: "🔧",
+        image: "images/levorg.jpg",
         features: ["スポーツワゴン", "AWD", "アイサイト", "走行性能"],
         description: "スバルの技術力が詰まったスポーツワゴン。先進のアイサイトと対称AWDで、安心と走りの楽しさを提供します。"
       },
       bmw1: {
         name: "1シリーズ",
         brand: "BMW",
-        emoji: "🏙️",
+        image: "images/bmw1.jpg",
         features: ["コンパクト", "スポーティ", "取り回し◎", "プレミアム"],
         description: "BMWの走りの楽しさをコンパクトに凝縮。小回りが利きながらもプレミアムな走行体験を提供する、都会派のための一台です。"
       },
       a7: {
         name: "A7 スポーツバック",
         brand: "AUDI",
-        emoji: "🎭",
+        image: "images/a7.jpg",
         features: ["4ドアクーペ", "エレガント", "走行性能", "プレミアム"],
         description: "美しい4ドアクーペのシルエットに、圧倒的な走行性能を秘めた一台。優雅さとスポーティさを高次元で融合しています。"
       },
       wrangler: {
         name: "ラングラー",
         brand: "JEEP",
-        emoji: "🏜️",
+        image: "images/wrangler.jpg",
         features: ["本格オフロード", "オープンエア", "タフ", "アメリカン"],
         description: "オフロードの王者。取り外せるドアやルーフで自然との一体感を楽しめる、冒険心をくすぐる唯一無二の存在です。"
       },
       z4: {
         name: "Z4",
         brand: "BMW",
-        emoji: "💨",
+        image: "images/z4.jpg",
         features: ["ロードスター", "オープン", "スポーティ", "ソロドライブ"],
         description: "風を感じて走る歓び。美しいロングノーズと電動ソフトトップの2シーターで、至福のソロドライブを約束します。"
       },
       mini: {
         name: "MINI",
         brand: "MINI",
-        emoji: "🇬🇧",
+        image: "images/mini.jpg",
         features: ["おしゃれ", "コンパクト", "デート向き", "個性的"],
         description: "アイコニックなデザインと遊び心が魅力。街中でもドライブでも、どこにいてもおしゃれで楽しい気分にしてくれます。"
       },
       sl: {
         name: "SLクラス",
         brand: "MERCEDES-BENZ",
-        emoji: "🌅",
+        image: "images/sl.jpg",
         features: ["ラグジュアリーオープン", "高級ロードスター", "V8", "究極のオープン"],
         description: "メルセデスが誇る究極のオープンカー。圧倒的なパワーとラグジュアリーな車内で、最高のオープンエア体験を。"
       },
       "86": {
         name: "86 / GR86",
         brand: "TOYOTA",
-        emoji: "🏁",
+        image: "images/gr86.jpg",
         features: ["スポーツカー", "FR", "軽量", "走りの楽しさ"],
         description: "純粋な走りの楽しさを追求したFRスポーツ。軽量コンパクトなボディで、ワインディングロードが最高の遊び場になります。"
       },
       jimny: {
         name: "ジムニー",
         brand: "SUZUKI",
-        emoji: "⛰️",
+        image: "images/jimny.jpg",
         features: ["軽SUV", "本格4WD", "レトロデザイン", "タフ"],
         description: "小さなボディに本格オフロード性能を詰め込んだ唯一無二の軽SUV。そのレトロでタフなデザインは世界中で愛されています。"
       },
       golf: {
         name: "ゴルフ",
         brand: "VOLKSWAGEN",
-        emoji: "🌍",
+        image: "images/golf.jpg",
         features: ["ベンチマーク", "万能", "質実剛健", "欧州ハッチ"],
         description: "コンパクトカーの世界基準。あらゆる面で高水準にまとまった、誰もが満足できる質実剛健なハッチバックです。"
       }
@@ -863,7 +959,10 @@
 
       document.getElementById('resultCarName').textContent = car.name;
       document.getElementById('resultCarBrand').textContent = car.brand;
-      document.getElementById('resultEmoji').textContent = car.emoji;
+      const imgEl = document.getElementById('resultCarImage');
+      imgEl.src = car.image;
+      imgEl.alt = car.name;
+      imgEl.style.display = 'block';
 
       // Features
       const featuresEl = document.getElementById('resultFeatures');
@@ -922,4 +1021,5 @@
     }
   </script>
 </body>
+
 </html>
